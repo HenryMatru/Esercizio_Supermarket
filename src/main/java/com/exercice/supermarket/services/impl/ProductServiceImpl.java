@@ -62,8 +62,8 @@ public class ProductServiceImpl implements ProductService {
 		if (this.ticketRepository.findById(id).isPresent()) {
 			Ticket ticket = this.ticketRepository.findById(id).get();
 			for (Product product : products) {
-				if (this.productRepository.findById(id).isPresent()) {
-					ticket.getProducts().add(product);
+				if (this.productRepository.findById(product.getId()).isPresent()) {
+					ticket.getProducts().add(this.productRepository.findById(product.getId()).get());
 				}
 			}
 			return ticket;
