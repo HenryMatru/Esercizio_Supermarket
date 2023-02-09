@@ -1,5 +1,6 @@
 package com.exercice.supermarket.models;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,8 +27,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ticket")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Ticket.class)
-public class Ticket {
+public class Ticket implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
