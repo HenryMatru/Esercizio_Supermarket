@@ -52,12 +52,17 @@ public class ProductControllerImpl implements ProductController {
 	@Override
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductDTO> findById(@PathVariable("id") Long id) {
+		/*
 		if (this.productService.findById(id).isPresent()) {
 			Product product = this.productService.findById(id).get();
 			ProductDTO productDTO = this.productMapper.asDTO(product);
 			return new ResponseEntity<>(productDTO, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		*/
+		Product product = this.productService.findById(id).get();
+		ProductDTO productDTO = this.productMapper.asDTO(product);
+		return new ResponseEntity<>(productDTO, HttpStatus.OK);
 	}
 
 	@Override
