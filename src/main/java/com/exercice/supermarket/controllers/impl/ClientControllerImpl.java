@@ -18,9 +18,12 @@ import com.exercice.supermarket.controllers.ClientController;
 import com.exercice.supermarket.dto.ClientDTO;
 import com.exercice.supermarket.dto.ProductDTO;
 import com.exercice.supermarket.dto.TicketDTO;
+import com.exercice.supermarket.exceptions.ObjectWrongFormatException;
+import com.exercice.supermarket.exceptions.ResourceNotFoundException;
 import com.exercice.supermarket.mappers.ClientMapper;
 import com.exercice.supermarket.mappers.TicketMapper;
 import com.exercice.supermarket.models.Client;
+import com.exercice.supermarket.models.Ticket;
 import com.exercice.supermarket.services.ClientService;
 
 @RestController
@@ -44,7 +47,7 @@ public class ClientControllerImpl implements ClientController {
 	
 	@Override
 	@PostMapping("/insert")
-	public ResponseEntity<ClientDTO> save(@RequestBody ClientDTO clientDTO) {
+	public ResponseEntity<ClientDTO> save(@RequestBody ClientDTO clientDTO) throws ObjectWrongFormatException {
 		Client client = this.clientMapper.asEntity(clientDTO);
 		return new ResponseEntity<>(this.clientMapper.asDTO(this.clientService.save(client)),
 				                    HttpStatus.CREATED);
@@ -53,11 +56,8 @@ public class ClientControllerImpl implements ClientController {
 	@Override
 	@GetMapping("/{id}")
 	public ResponseEntity<ClientDTO> findById(@PathVariable("id") Long id) {
-		if (this.clientService.findById(id).isPresent()) {
-			Client client = this.clientService.findById(id).get();
-			return new ResponseEntity<>(this.clientMapper.asDTO(client), HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Client client = this.clientService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+		return new ResponseEntity<>(reformatClientDTO(this.clientMapper.asDTO(client)), HttpStatus.OK);
 	}
 
 	@Override
@@ -70,28 +70,29 @@ public class ClientControllerImpl implements ClientController {
 	@Override
 	@PutMapping("/{id}")
 	public ResponseEntity<ClientDTO> update(@RequestBody ClientDTO clientDTO, @PathVariable("id") Long id) {
-		if (this.clientService.findById(id).isPresent()) {
-			Client client = this.clientService.update(this.clientMapper.asEntity(clientDTO), id);
-			return new ResponseEntity<>(this.clientMapper.asDTO(client), HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Client client = this.clientService.update(this.clientMapper.asEntity(clientDTO), id);
+		return new ResponseEntity<>(this.clientMapper.asDTO(client), HttpStatus.OK);
 	}
 
 	@Override
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ClientDTO> delete(@PathVariable("id") Long id) {
-		if (this.clientService.findById(id).isPresent()) {
-			ClientDTO clientDTO = this.clientMapper.asDTO(this.clientService.findById(id).get());
-			this.clientService.deleteById(id);
-			return new ResponseEntity<>(clientDTO, HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		ClientDTO clientDTO = this.clientMapper.asDTO(this.clientService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Client not found")));
+		this.clientService.deleteById(id);
+		return new ResponseEntity<>(clientDTO, HttpStatus.NO_CONTENT);
 	}
 
 	@Override
 	@PutMapping("/shopping/{id}")
 	public ResponseEntity<TicketDTO> shopping(List<ProductDTO> productDTOS, Long id) {
 		return new ResponseEntity<>(this.ticketMapper.asDTO(this.clientService.shopping(productDTOS, id)), HttpStatus.CREATED);
+	}
+	
+	private ClientDTO reformatClientDTO(ClientDTO clientDTO) {
+		for (Ticket ticket : clientDTO.getTickets()) {
+			ticket.setClient(null);
+		}
+		return clientDTO;
 	}
 
 }

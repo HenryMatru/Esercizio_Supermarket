@@ -4,43 +4,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.exercice.supermarket.models.Ticket;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+@Setter
+@JsonInclude(Include.NON_NULL)
 public class ClientDTO {
 	
-	private Long id;
+	private Long id_client;
 	private String name;
 	private String surname;
 	private Set<Ticket> tickets = new HashSet<>();
-	
-	public Long getId() {
-		return this.id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getName() {
-		return this.name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getSurname() {
-		return this.surname;
-	}
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
-	public Set<Ticket> getTickets() {
-		return this.tickets;
-	}
-	public void setTickets(Set<Ticket> tickets) {
-		this.tickets = tickets;
-	}
 	
 }

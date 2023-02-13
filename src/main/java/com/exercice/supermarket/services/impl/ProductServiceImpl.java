@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Product update(Product entity, Long id) {
 		if (this.findById(id).isPresent()) {
-			entity.setId(id);
+			entity.setId_product(id);
 			this.save(entity);
 		}
 		return null;
@@ -62,8 +62,8 @@ public class ProductServiceImpl implements ProductService {
 		if (this.ticketRepository.findById(id).isPresent()) {
 			Ticket ticket = this.ticketRepository.findById(id).get();
 			for (Product product : products) {
-				if (this.productRepository.findById(product.getId()).isPresent()) {
-					Product productToInsert = this.productRepository.findById(product.getId()).get();
+				if (this.productRepository.findById(product.getId_product()).isPresent()) {
+					Product productToInsert = this.productRepository.findById(product.getId_product()).get();
 					productToInsert.setTicket(ticket);
 					this.productRepository.save(productToInsert);
 					ticket.getProducts().add(productToInsert);

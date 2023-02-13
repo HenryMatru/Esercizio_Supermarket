@@ -33,7 +33,7 @@ public class TicketServiceImpl implements TicketService {
 	public Ticket save(Ticket entity) {
 		
 		if (entity.getClient() != null) {
-			entity.setClient(this.clientRepository.findById(entity.getClient().getId()).get());
+			entity.setClient(this.clientRepository.findById(entity.getClient().getId_client()).get());
 		}
 		/*
 		Set<Product> validProducts = new HashSet<>();
@@ -76,7 +76,7 @@ public class TicketServiceImpl implements TicketService {
 	@Override
 	public Ticket update(Ticket entity, Long id) {
 		if (this.findById(id).isPresent()) {
-			entity.setId(id);
+			entity.setId_ticket(id);
 			this.save(entity);
 		}
 		return null;

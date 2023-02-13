@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.exercice.supermarket.dao.ClientRepository;
 import com.exercice.supermarket.dao.ProductRepository;
 import com.exercice.supermarket.dao.TicketRepository;
 import com.exercice.supermarket.dto.ProductDTO;
+import com.exercice.supermarket.exceptions.CheckClassErrors;
+import com.exercice.supermarket.exceptions.ObjectWrongFormatException;
 import com.exercice.supermarket.mappers.ProductMapper;
 import com.exercice.supermarket.models.Client;
 import com.exercice.supermarket.models.Product;
@@ -42,7 +45,10 @@ public class ClientServiceImpl implements ClientService {
 	}
 	
 	@Override
-	public Client save(Client entity) {
+	public Client save(Client entity) throws ObjectWrongFormatException, IllegalArgumentException, OptimisticLockingFailureException {
+		if (!CheckClassErrors.checkHasAllFields(Client.class, entity)) {
+			throw new ObjectWrongFormatException("The client doesn't have all the required fields");
+		}
 		return this.clientRepository.save(entity);
 	}
 
@@ -64,7 +70,7 @@ public class ClientServiceImpl implements ClientService {
 	@Override
 	public Client update(Client entity, Long id) {
 		if (this.findById(id).isPresent()) {
-			entity.setId(id);
+			entity.setId_client(id);
 			this.save(entity);
 		}
 		return null;
@@ -76,7 +82,7 @@ public class ClientServiceImpl implements ClientService {
 			Client client = this.findById(id).get();
 			client.setTickets(null);
 			for (Ticket ticket : this.ticketRepository.findAll()) {
-				if (ticket.getClient().getId() == id) {
+				if (ticket.getClient().getId_client() == id) {
 					ticket.setClient(null);
 				}
 			}
@@ -89,7 +95,7 @@ public class ClientServiceImpl implements ClientService {
 		Ticket ticket = new Ticket();
 		
 		for (ProductDTO productDTO : productDTOS) {
-			if (this.productRepository.findById(this.productMapper.asEntity(productDTO).getId()).isPresent()) {
+			if (this.productRepository.findById(this.productMapper.asEntity(productDTO).getId_product()).isPresent()) {
 				Product product = this.productMapper.asEntity(productDTO);
 				ticket.getProducts().add(product);
 				ticket.setPrice(ticket.getPrice() + product.getPrice());

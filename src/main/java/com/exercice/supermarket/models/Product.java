@@ -5,7 +5,9 @@ import java.sql.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,21 +21,26 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+@Setter
 @Entity
 @Table(name = "product")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Product.class)
+@JsonInclude(Include.NON_NULL)
 public class Product implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Long id;
+	@Column(name = "id_product")
+	private Long id_product;
 
 	@Column(name = "name")
 	private String name;
@@ -46,48 +53,7 @@ public class Product implements Serializable {
 	private Date expiration;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "ticket", referencedColumnName = "id")
+	@JoinColumn(name = "ticket", referencedColumnName = "id_ticket")
 	private Ticket ticket;
-
-	/* List of getters and setters */
-	public long getId() {
-		return this.id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public double getPrice() {
-		return this.price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
-	}
-
-	public Date getExpiration() {
-		return expiration;
-	}
-
-	public void setExpiration(Date expiration) {
-		this.expiration = expiration;
-	}
-
-	public Ticket getTicket() {
-		return this.ticket;
-	}
-
-	public void setTicket(Ticket ticket) {
-		this.ticket = ticket;
-	}
-
+	
 }
